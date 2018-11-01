@@ -35,24 +35,12 @@ function loadAccount(name) {
                         showUserData(result);
                     });
 
-                if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
-                    $('#stoodkev img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("stoodkev") ? '' : '_default') + '.svg');
-                    $('#yabapmatt img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("yabapmatt") ? '' : '_default') + '.svg');
-                    $('#aggroed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("aggroed") ? '' : '_default') + '.svg');
+                if (!result[0].proxy && !result[0].witness_votes.includes("tradeitforwed") ) {
+                    $('#tradeitforweed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("tradeitforwed") ? '' : '_default') + '.svg');
 
-                    if (!result[0].witness_votes.includes("yabapmatt"))
-                        $("#yabapmatt").click(function() {
-                            voteFor("yabapmatt");
-                        });
-
-                    if (!result[0].witness_votes.includes("stoodkev"))
-                        $("#stoodkev").click(function() {
-                            voteFor("stoodkev");
-                        });
-
-                    if (!result[0].witness_votes.includes("aggroed"))
-                        $("#aggroed").click(function() {
-                            voteFor("aggroed");
+                    if (!result[0].witness_votes.includes("tradeitforwed"))
+                        $("#tradeitforwed").click(function() {
+                            voteFor("tradeitforwed");
                         });
 
                     setTimeout(function() {
