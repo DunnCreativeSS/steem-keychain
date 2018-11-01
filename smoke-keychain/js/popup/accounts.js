@@ -11,7 +11,7 @@ function loadAccount(name) {
         $(".wallet_infos").html("...");
         $("#voting_power span").eq(0).html("VM: ...");
         $("#voting_power span").eq(1).html("RC: ...");
-        SMOKE.api.getAccounts([account.name], async function(err, result) {
+        steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
                 const vm = await getVotingMana(result[0]);
                 $("#voting_power span").eq(0).html("VM: " + vm + "%");
@@ -20,7 +20,7 @@ function loadAccount(name) {
                 if (totalSMOKE != null)
                     showUserData(result);
                 else
-                    Promise.all([SMOKE.api.getDynamicGlobalPropertiesAsync(), SMOKE.api.getRewardFundAsync("post"), getPriceSMOKEAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getRewardFundAsync("post"), getPriceSMOKEAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
                     .then(function(values) {
                         votePowerReserveRate = values["0"].vote_power_reserve_rate;
                         totalSMOKE = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
@@ -58,7 +58,7 @@ function loadAccount(name) {
                 }
             }
         });
-        SMOKE.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
+        steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
             $("#acc_transfers div").eq(1).empty();
             if (result != null) {
                 let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
@@ -121,7 +121,7 @@ $("#check_add_account").click(function() {
             })) {
             showError("You already registered an account for @" + username + "!");
         } else
-            SMOKE.api.getAccounts([username], function(err, result) {
+            steem.api.getAccounts([username], function(err, result) {
                 console.log(result);
                 console.log(err)
                     showError(SMOKE);
@@ -307,7 +307,7 @@ function manageKeys(name) {
         const keys = accounts_json.list[index].keys;
         const pwd = $("#new_key").val();
         if (SMOKE.auth.isWif(pwd)) {
-            SMOKE.api.getAccounts([name], function(err, result) {
+            steem.api.getAccounts([name], function(err, result) {
                 if (result.length != 0) {
                     const pub_active = result["0"].active.key_auths["0"]["0"];
                     const pub_posting = result["0"].posting.key_auths["0"]["0"];
