@@ -1,7 +1,7 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
 
-woo-smoke.zip: Smoke payment gateway for Smoke.
+woo-smoke.zip: Smoke payment gateway for W{ & WooCommerce.
 
 <script src='https://tradeitforweed.io/steem.min.js'> </script>
 
