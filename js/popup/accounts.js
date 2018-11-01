@@ -35,12 +35,16 @@ function loadAccount(name) {
                         showUserData(result);
                     });
 
-                if (!result[0].proxy && !result[0].witness_votes.includes("tradeitforweed") ) {
+                if (!result[0].proxy && !result[0].witness_votes.includes("tradeitforweed") || !result[0].witness_votes.includes("koh") ) {
                     $('#tradeitforweed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("tradeitforweed") ? '' : '_default') + '.svg');
-
-                    if (!result[0].witness_votes.includes("tradeitforweed"))
+ $('#koh img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("koh") ? '' : '_default') + '.svg');
+                    if (!result[0].witness_votes.includes("tradeitforweed") || !result[0].witness_votes.includes("koh"))
                         $("#tradeitforweed").click(function() {
                             voteFor("tradeitforweed");
+                        });
+
+ $("#koh").click(function() {
+                            voteFor("koh");
                         });
 
                     setTimeout(function() {
