@@ -35,12 +35,12 @@ function loadAccount(name) {
                         showUserData(result);
                     });
 
-                if (!result[0].proxy && !result[0].witness_votes.includes("tradeitforwed") ) {
-                    $('#tradeitforweed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("tradeitforwed") ? '' : '_default') + '.svg');
+                if (!result[0].proxy && !result[0].witness_votes.includes("tradeitforweed") ) {
+                    $('#tradeitforweed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("tradeitforweed") ? '' : '_default') + '.svg');
 
-                    if (!result[0].witness_votes.includes("tradeitforwed"))
-                        $("#tradeitforwed").click(function() {
-                            voteFor("tradeitforwed");
+                    if (!result[0].witness_votes.includes("tradeitforweed"))
+                        $("#tradeitforweed").click(function() {
+                            voteFor("tradeitforweed");
                         });
 
                     setTimeout(function() {
