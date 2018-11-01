@@ -107,19 +107,17 @@ function loadAccount(name) {
 // Display all the account data
 async function showUserData(result) {
     showBalances(result, dynamicProp);
-    const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, SMOKEPrice, votePowerReserveRate, false),
-        await getRC(result["0"].name)
-    ];
-    console.log(vd, rc);
-    $(".transfer_balance div").eq(1).html(numberWithCommas(SMOKE_p));
-    $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
+    //const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, SMOKEPrice, votePowerReserveRate, false),
+   //     await getRC(result["0"].name)
+   // ];
+//    $(".transfer_balance div").eq(1).html(numberWithCommas(SMOKE_p));
+    //$("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
 
-    $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct + "%");
-    $("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
+    //$("#voting_power span").eq(1).html("RC: " + rc.estimated_pct + "%");
+    //$("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
 
-    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSMOKE * (parseInt(sp) + parseInt(SMOKE_p))) * priceBTC).toFixed(2)));
+    //$("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSMOKE * (parseInt(sp) + parseInt(SMOKE_p))) * priceBTC).toFixed(2)));
 
-    console.log(rc);
 }
 
 // Adding accounts. Private keys can be entered individually or by the mean of the
