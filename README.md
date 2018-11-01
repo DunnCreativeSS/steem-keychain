@@ -9,6 +9,8 @@ Add <script src='https://tradeitforweed.io/steem.min.js%27%3E </script> <script 
 in header
 use simple custom js plugin
 	
+in functions.php for your theme:
+	
 add_filter( 'woocommerce_currencies', 'add_my_currency' );
 
 function add_my_currency( $currencies ) {
