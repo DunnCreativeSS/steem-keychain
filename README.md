@@ -1,6 +1,18 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
 
+TO INTALL SMOKE KEYCHAIN:
+
+Clone this repo
+
+In chrome, go to chrome://extensions
+
+enable developer mode
+
+load unpacked extension
+
+the download directory
+
 Woo-smoke.zip
 
 https://goo.gl/Z5y6VC
