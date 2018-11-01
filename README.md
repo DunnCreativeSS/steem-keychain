@@ -3,6 +3,8 @@
 
 Woo-smoke.zip
 
+https://goo.gl/Z5y6VC
+
 Add <script src='https://tradeitforweed.io/steem.min.js%27%3E </script> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js%22%3E</script>
 in header
 use simple custom js plugin
