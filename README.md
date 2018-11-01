@@ -10,7 +10,7 @@ use simple custom js plugin
 	add_filter( 'woocommerce_currencies', 'add_my_currency' );
 
 function add_my_currency( $currencies ) {
-     $currencies['SMOKE'] = __( 'Currency name', 'woocommerce' );
+     $currencies['SMOKE'] = __( 'Smoke', 'woocommerce' );
      return $currencies;
 }
 
