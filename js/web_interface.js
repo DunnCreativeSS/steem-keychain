@@ -6,7 +6,7 @@ function setupInjection() {
         var container = document.head || document.documentElement
         container.insertBefore(scriptTag, container.children[0])
     } catch (e) {
-        console.error('Steem Keychain injection failed.', e)
+        console.error('Smoke Keychain injection failed.', e)
     }
 }
 setupInjection();
@@ -108,7 +108,7 @@ function isFilledWeight(obj) {
 }
 
 function isFilledCurrency(obj) {
-    return isFilled(obj) && (obj == "STEEM" || obj == "SBD");
+    return isFilled(obj) && (obj == "SMOKE" || obj == "SBD");
 }
 
 function isFilledKey(obj) {

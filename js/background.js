@@ -11,8 +11,8 @@ const LOCK_AFTER_SECONDS_IDLE = 15;
 
 //chrome.storage.local.remove("no_confirm");
 chrome.storage.local.get(['current_rpc'], function(items) {
-  steem.api.setOptions({
-      url: items.current_rpc||'https://api.steemit.com'
+  SMOKE.api.setOptions({
+      url: items.current_rpc||'https://rpc.smoke.io'
   });
 });
 
@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             mk: mk
         }, function(response) {});
     } else if (msg.command == "setRPC") {
-      steem.api.setOptions({
-          url: msg.rpc||'https://api.steemit.com'
+      SMOKE.api.setOptions({
+          url: msg.rpc||'https://rpc.smoke.io'
       });
     }
       else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
@@ -91,7 +91,7 @@ async function performTransaction(data, tab) {
     try {
         switch (data.type) {
             case "vote":
-                steem.broadcast.vote(key, data.username, data.author, data.permlink, parseInt(data.weight), function(err, result) {
+                SMOKE.broadcast.vote(key, data.username, data.author, data.permlink, parseInt(data.weight), function(err, result) {
                     const message = {
                         command: "answerRequest",
                         msg: {
@@ -110,7 +110,7 @@ async function performTransaction(data, tab) {
                 });
                 break;
             case "custom":
-                steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
+                SMOKE.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
                     const message = {
                         command: "answerRequest",
                         msg: {
@@ -137,13 +137,13 @@ async function performTransaction(data, tab) {
                 let key_transfer = ac.keys.active;
                 if(data.memo&&data.memo.length>0&&data.memo[0]=="#"){
                   try{
-                      const receiver=await  steem.api.getAccountsAsync([data.to]);
+                      const receiver=await  SMOKE.api.getAccountsAsync([data.to]);
                       const memoReceiver=receiver["0"].memo_key;
                       memo= window.encodeMemo(ac.keys.memo, memoReceiver, memo);
                   }
                   catch(e){console.log(e);}
                 }
-                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
+                SMOKE.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
                     const message = {
                         command: "answerRequest",
                         msg: {
@@ -164,7 +164,7 @@ async function performTransaction(data, tab) {
                 break;
             case "post":
                 if (data.comment_options == "") {
-                    steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
+                    SMOKE.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
                         const message = {
                             command: "answerRequest",
                             msg: {
@@ -198,7 +198,7 @@ async function performTransaction(data, tab) {
                             JSON.parse(data.comment_options)
                         ]
                     ];
-                    steem.broadcast.send({
+                    SMOKE.broadcast.send({
                         operations,
                         extensions: []
                     }, {
@@ -224,19 +224,19 @@ async function performTransaction(data, tab) {
                 }
                 break;
             case "delegation":
-                steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                SMOKE.api.getDynamicGlobalPropertiesAsync().then((res) => {
                     let delegated_vest=null;
                     if(data.unit=="SP"){
-                      const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                      const totalSMOKE = Number(res.total_vesting_fund_steem.split(' ')[0]);
                       const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-                      delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
+                      delegated_vest = parseFloat(data.amount) * totalVests / totalSMOKE;
                       delegated_vest = delegated_vest.toFixed(6);
                       delegated_vest = delegated_vest.toString() + ' VESTS';
                     }
                     else {
                       delegated_vest = data.amount + ' VESTS';
                     }
-                    steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                    SMOKE.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
                         const message = {
                             command: "answerRequest",
                             msg: {
@@ -361,7 +361,7 @@ function checkBeforeCreate(request, tab, domain) {
                     result: null,
                     data: request,
                     message: "The wallet is locked!",
-                    display_msg: "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+                    display_msg: "The current website is trying to send a request to the Smoke Keychain browser extension. Please enter your password below to unlock the wallet and continue."
                 },
                 tab: tab,
                 domain: domain
@@ -391,12 +391,12 @@ function checkBeforeCreate(request, tab, domain) {
                     // If a username is specified, check that its active key has been added to the wallet
                     if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
                         createPopup(function() {
-                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Smoke Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                         });
                     }
                     else if(encode&&!account.keys.hasOwnProperty("memo")){
                       createPopup(function() {
-                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
+                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Smoke Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
                       });
                     }
                     else {
@@ -414,7 +414,7 @@ function checkBeforeCreate(request, tab, domain) {
                 } else {
                     if (!accounts.list.find(e => e.name == request.username)) {
                         function callback() {
-                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " which has not been added to the wallet.", request);
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Smoke Keychain browser extension for account @" + request.username + " which has not been added to the wallet.", request);
                         }
                         createPopup(callback);
                     } else {
@@ -429,7 +429,7 @@ function checkBeforeCreate(request, tab, domain) {
 
                         if (account.keys[typeWif] == undefined) {
                             createPopup(function() {
-                                sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                                sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Smoke Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
                             });
                         } else {
                             key = account.keys[typeWif];

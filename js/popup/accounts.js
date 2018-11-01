@@ -11,27 +11,27 @@ function loadAccount(name) {
         $(".wallet_infos").html("...");
         $("#voting_power span").eq(0).html("VM: ...");
         $("#voting_power span").eq(1).html("RC: ...");
-        steem.api.getAccounts([account.name], async function(err, result) {
+        SMOKE.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
                 const vm = await getVotingMana(result[0]);
                 $("#voting_power span").eq(0).html("VM: " + vm + "%");
                 $("#voting_power span").eq(0).attr("title", "Full in: " + getTimeBeforeFull(vm * 100));
 
-                if (totalSteem != null)
+                if (totalSMOKE != null)
                     showUserData(result);
                 else
-                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                    Promise.all([SMOKE.api.getDynamicGlobalPropertiesAsync(), SMOKE.api.getRewardFundAsync("post"), getPriceSMOKEAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
                     .then(function(values) {
                         votePowerReserveRate = values["0"].vote_power_reserve_rate;
-                        totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
+                        totalSMOKE = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
                         totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
-                        rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
+                        rewardBalance = 1;
                         recentClaims = values["2"].recent_claims;
-                        steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
+                        SMOKEPrice = 0.06;
                         dynamicProp = values[0];
-                        priceSBD = values["3"];
-                        priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
-                        priceBTC = values["5"];
+                        priceSBD = 0.06;
+                        priceSMOKE = 0.06; //priceSMOKE is current price on Bittrex while SMOKEPrice is the blockchain price.
+                        priceBTC = 6000;
                         showUserData(result);
                     });
 
@@ -70,7 +70,7 @@ function loadAccount(name) {
                 }
             }
         });
-        steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
+        SMOKE.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
             $("#acc_transfers div").eq(1).empty();
             if (result != null) {
                 let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
@@ -107,17 +107,17 @@ function loadAccount(name) {
 // Display all the account data
 async function showUserData(result) {
     showBalances(result, dynamicProp);
-    const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false),
+    const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, SMOKEPrice, votePowerReserveRate, false),
         await getRC(result["0"].name)
     ];
     console.log(vd, rc);
-    $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+    $(".transfer_balance div").eq(1).html(numberWithCommas(SMOKE_p));
     $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
 
     $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct + "%");
     $("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
 
-    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)));
+    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSMOKE * (parseInt(sp) + parseInt(SMOKE_p))) * priceBTC).toFixed(2)));
 
     console.log(rc);
 }
@@ -135,12 +135,15 @@ $("#check_add_account").click(function() {
             })) {
             showError("You already registered an account for @" + username + "!");
         } else
-            steem.api.getAccounts([username], function(err, result) {
+            SMOKE.api.getAccounts([username], function(err, result) {
+                console.log(result);
+                console.log(err)
+                    showError(SMOKE);
                 if (result.length != 0) {
                     const pub_active = result["0"].active.key_auths["0"]["0"];
                     const pub_posting = result["0"].posting.key_auths["0"]["0"];
                     const pub_memo = result["0"].memo_key;
-                    if (steem.auth.isWif(pwd)) {
+                    if (SMOKE.auth.isWif(pwd)) {
                         if (isMemoWif(pwd, pub_memo)) {
                             addAccount({
                                 name: username,
@@ -167,7 +170,7 @@ $("#check_add_account").click(function() {
                             });
                         }
                     } else {
-                        const keys = steem.auth.getPrivateKeys(username, pwd, ["posting", "active", "memo"]);
+                        const keys = SMOKE.auth.getPrivateKeys(username, pwd, ["posting", "active", "memo"]);
                         if (keys.activePubkey == pub_active && keys.postingPubkey == pub_posting && keys.memoPubkey == pub_memo) {
                             $("#add_account_div").hide();
                             $("#master_check").show();
@@ -176,7 +179,7 @@ $("#check_add_account").click(function() {
                         }
                     }
                 } else {
-                    showError("Please check the username and try again.");
+                    showError(err);
                 }
             });
     } else {
@@ -194,7 +197,7 @@ $("#save_master").click(function() {
             permissions.push("active");
         if ($("#memo_key").prop("checked"))
             permissions.push("memo");
-        const keys = steem.auth.getPrivateKeys($("#username").val(), $("#pwd").val(), permissions);
+        const keys = SMOKE.auth.getPrivateKeys($("#username").val(), $("#pwd").val(), permissions);
         addAccount({
             name: $("#username").val(),
             keys: keys
@@ -317,8 +320,8 @@ function manageKeys(name) {
     $('#add_new_key').unbind("click").click(function() {
         const keys = accounts_json.list[index].keys;
         const pwd = $("#new_key").val();
-        if (steem.auth.isWif(pwd)) {
-            steem.api.getAccounts([name], function(err, result) {
+        if (SMOKE.auth.isWif(pwd)) {
+            SMOKE.api.getAccounts([name], function(err, result) {
                 if (result.length != 0) {
                     const pub_active = result["0"].active.key_auths["0"]["0"];
                     const pub_posting = result["0"].posting.key_auths["0"]["0"];
@@ -361,13 +364,13 @@ function addKeys(i, key, priv, pub, name) {
 
 // show balance for this account
 function showBalances(result, res) {
-    sbd = result["0"].sbd_balance.replace("SBD", "");
+    sbd = 0;
     const vs = result["0"].vesting_shares;
-    steem_p = result["0"].balance.replace("STEEM", "");
+    SMOKE_p = result["0"].balance.replace("SMOKE", "");
     const total_vesting_shares = res.total_vesting_shares;
     const total_vesting_fund = res.total_vesting_fund_steem;
-    sp = steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
-    $("#wallet_amt div").eq(0).html(numberWithCommas(steem_p));
+    sp = SMOKE.formatter.vestToSMOKE(vs, total_vesting_shares, total_vesting_fund);
+    $("#wallet_amt div").eq(0).html(numberWithCommas(SMOKE_p));
     $("#wallet_amt div").eq(1).html(numberWithCommas(sbd));
     $("#wallet_amt div").eq(2).html(numberWithCommas(sp.toFixed(3)));
     $("#balance_loader").hide();

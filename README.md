@@ -1,26 +1,26 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
-Putting private keys directly into websites is not safe or secure. Even ones run by SteemIt, Inc. Yet this is currently how nearly every Steem-based site or service currently works. On top of that, most Steem users likely use their master password which is even worse
+Putting private keys directly into websites is not safe or secure. Even ones run by SMOKEIt, Inc. Yet this is currently how nearly every SMOKE-based site or service currently works. On top of that, most SMOKE users likely use their master password which is even worse
 
-The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of Steem users and does not easily interact with websites - which is Steem's primary use case.
+The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of SMOKE users and does not easily interact with websites - which is SMOKE's primary use case.
 
 On Ethereum, you never have to enter your private key into a website to use a dApp, you can just use a browser extension like Metamask, which dApp websites can interface with to securely store your keys and broadcast transactions to the blockchain.
 
-Steem Keychain aims to bring the security and ease-of-use of Metamask to the Steem blockchain platform.
+Smoke Keychain aims to bring the security and ease-of-use of Metamask to the SMOKE blockchain platform.
 
 ## Features
-The Steem Keychain extension includes the following features:
-- Store an unlimited number of Steem account keys, encrypted with AES
+The Smoke Keychain extension includes the following features:
+- Store an unlimited number of SMOKE account keys, encrypted with AES
 - View balances, transaction history, voting power, and more
-- Send STEEM and SBD transfers right from the extension
-- Securely interact with Steem-based websites that have integrated with Steem Keychain
+- Send SMOKE and SBD transfers right from the extension
+- Securely interact with SMOKE-based websites that have integrated with Smoke Keychain
 - Manage transaction confirmation preferences by account and by website
 - Locks automatically on browser shutdown or manually using the lock button
 
 ## Website Integration
-Websites can currently request the Steem Keychain extension to perform the following functions / broadcast operations:
+Websites can currently request the Smoke Keychain extension to perform the following functions / broadcast operations:
 - Send a handshake to make sure the extension is installed
-- Decrypt a message encrypted by a Steem account private key (commonly used for "logging in")
+- Decrypt a message encrypted by a SMOKE account private key (commonly used for "logging in")
 - Post a comment (top level or reply)
 - Broadcast a vote
 - Broadcast a custom JSON operation
@@ -37,13 +37,13 @@ NOTE: On localhost, it will only run on port 1337.
 
 ## API Documentation
 
-The Steem Keychain extension will inject a "steem_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
+The Smoke Keychain extension will inject a "steem_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
 
 ```
 if(window.steem_keychain) {
-    // Steem Keychain extension installed...
+    // Smoke Keychain extension installed...
 } else {
-    // Steem Keychain extension not installed...
+    // Smoke Keychain extension not installed...
 }
 ```
 
@@ -59,7 +59,7 @@ steem_keychain.requestHandshake(function() {
 
 ### Transfer
 
-Sites can request that the extension sign and broadcast a transfer operation for STEEM or SBD. Note that a confirmation will always be shown to the user for transfer operations and they cannot be disabled.
+Sites can request that the extension sign and broadcast a transfer operation for SMOKE or SBD. Note that a confirmation will always be shown to the user for transfer operations and they cannot be disabled.
 
 ```
 steem_keychain.requestTransfer(account_name, to_account, amount, memo, currency, function(response) {
@@ -69,7 +69,7 @@ steem_keychain.requestTransfer(account_name, to_account, amount, memo, currency,
 
 ### Decode Memo / Verify Key
 
-Sites can request that the extension decode a memo encrypted by the Memo, Posting, or Active key for a particular Steem account. This is messaged to the user as "Verify Key" since it is typically used to verify that they have access to the private key for an account in order to "log them in".
+Sites can request that the extension decode a memo encrypted by the Memo, Posting, or Active key for a particular SMOKE account. This is messaged to the user as "Verify Key" since it is typically used to verify that they have access to the private key for an account in order to "log them in".
 
 ```
 steem_keychain.requestVerifyKey(account_name, encrypted_message, key_type, function(response) {
@@ -109,4 +109,4 @@ steem_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, d
 });
 ```
 
-Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "Steem Monsters Card Transfer").
+Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "SMOKE Monsters Card Transfer").

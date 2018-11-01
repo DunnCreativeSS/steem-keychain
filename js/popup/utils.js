@@ -1,5 +1,5 @@
-const STEEMIT_100_PERCENT = 10000;
-const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
+const SMOKEIT_100_PERCENT = 10000;
+const SMOKE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 
 // get VM only
 var getVotingMana = function(account) {
@@ -11,11 +11,12 @@ var getVotingMana = function(account) {
 
 // get all information regarding VM
 var getVotingManaData = function(account) {
+    
     const estimated_max = getEffectiveVestingSharesPerAccount(account) * 1000000;
-    const current_mana = parseFloat(account.voting_manabar.current_mana);
-    const last_update_time = account.voting_manabar.last_update_time;
+    const current_mana = parseFloat(account.voting_power);
+    const last_update_time = account.last_vote_time;
     const diff_in_seconds = Math.round(Date.now() / 1000 - last_update_time);
-    let estimated_mana = (current_mana + diff_in_seconds * estimated_max / STEEM_VOTING_MANA_REGENERATION_SECONDS);
+    let estimated_mana = (current_mana + diff_in_seconds * estimated_max / SMOKE_VOTING_MANA_REGENERATION_SECONDS);
     if (estimated_mana > estimated_max)
         estimated_mana = estimated_max;
     const estimated_pct = estimated_mana / estimated_max * 100;
@@ -37,30 +38,30 @@ var getEffectiveVestingSharesPerAccount = function(account) {
 };
 
 // get SP of the account
-var getSteemPowerPerAccount = function(account, totalVestingFund, totalVestingShares) {
+var getSMOKEPowerPerAccount = function(account, totalVestingFund, totalVestingShares) {
     if (totalVestingFund && totalVestingShares) {
         var vesting_shares = getEffectiveVestingSharesPerAccount(account);
-        var sp = steem.formatter.vestToSteem(vesting_shares, totalVestingShares, totalVestingFund);
+        var sp = SMOKE.formatter.vestToSMOKE(vesting_shares, totalVestingShares, totalVestingFund);
         return sp;
     }
 };
 
 // get the voting dollars of a vote for a certain account, if full is set
 // to true, the VM will be set to 100%, otherwise it will use the current VM
-var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalance, recentClaims, steemPrice, votePowerReserveRate, full) {
+var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalance, recentClaims, SMOKEPrice, votePowerReserveRate, full) {
     const vm = await getVotingMana(account) * 100;
     return new Promise(function(fulfill, reject) {
-        if (rewardBalance && recentClaims && steemPrice && votePowerReserveRate) {
+        if (rewardBalance && recentClaims && SMOKEPrice && votePowerReserveRate) {
             var effective_vesting_shares = Math.round(getEffectiveVestingSharesPerAccount(account) * 1000000);
             var current_power = full ? 10000 : vm;
             var weight = voteWeight * 100;
-            var max_vote_denom = votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS / (60 * 60 * 24);
-            var used_power = Math.round((current_power * weight) / STEEMIT_100_PERCENT);
+            var max_vote_denom = votePowerReserveRate * SMOKEIT_VOTE_REGENERATION_SECONDS / (60 * 60 * 24);
+            var used_power = Math.round((current_power * weight) / SMOKEIT_100_PERCENT);
             used_power = Math.round((used_power + max_vote_denom - 1) / max_vote_denom);
-            var rshares = Math.round((effective_vesting_shares * used_power) / (STEEMIT_100_PERCENT))
+            var rshares = Math.round((effective_vesting_shares * used_power) / (SMOKEIT_100_PERCENT))
             var voteValue = rshares *
                 rewardBalance / recentClaims *
-                steemPrice;
+                SMOKEPrice;
             fulfill(voteValue.toFixed(2));
         } else reject();
     });
@@ -78,22 +79,23 @@ var getRC = function(name) {
     };
     return new Promise(function(fulfill, reject) {
         $.ajax({
-            url: "https://api.steemit.com",
+            url: "https://rpc.smoke.io",
             type: "POST",
             data: JSON.stringify(data),
             success: function(response) {
-                const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
+             
+                const SMOKE_RC_MANA_REGENERATION_SECONDS = 432000;
                 const estimated_max = parseFloat(response.result.rc_accounts["0"].max_rc);
-                const current_mana = parseFloat(response.result.rc_accounts["0"].rc_manabar.current_mana);
-                const last_update_time = parseFloat(response.result.rc_accounts["0"].rc_manabar.last_update_time);
-                const diff_in_seconds = Math.round(Date.now() / 1000 - last_update_time);
-                let estimated_mana = (current_mana + diff_in_seconds * estimated_max / STEEM_RC_MANA_REGENERATION_SECONDS);
+               const current_mana = parseFloat(response.result.rc_accounts["0"].voting_power);
+                const last_update_time = parseFloat(response.result.rc_accounts["0"].last_vote_time);
+               const diff_in_seconds = Math.round(Date.now() / 1000 - last_update_time);
+                let estimated_mana = (current_mana + diff_in_seconds * estimated_max / SMOKE_RC_MANA_REGENERATION_SECONDS);
                 if (estimated_mana > estimated_max)
                     estimated_mana = estimated_max;
 
                 const estimated_pct = estimated_mana / estimated_max * 100;
                 const res = {
-                    "current_mana": current_mana,
+                   "current_mana": current_mana,
                     "last_update_time": last_update_time,
                     "estimated_mana": estimated_mana,
                     "estimated_max": estimated_max,
@@ -129,8 +131,8 @@ function getTimeBeforeFull(votingPower) {
     return fullInString;
 }
 
-// Get STEEM price from Bittrex
-function getPriceSteemAsync() {
+// Get SMOKE price from Bittrex
+function getPriceSMOKEAsync() {
     return new Promise(function(resolve, reject) {
         $.ajax({
             type: "GET",
@@ -138,9 +140,9 @@ function getPriceSteemAsync() {
                 xhttp.setRequestHeader("Content-type", "application/json");
                 xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
             },
-            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
+            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SMOKE',
             success: function(response) {
-                resolve(response.result['Bid']);
+                resolve(0.06);
             },
             error: function(msg) {
                 resolve(msg);
@@ -257,7 +259,7 @@ function initiateCustomSelect() {
             this.classList.toggle("select-arrow-active");
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
-            } else if (!getPref && !manageKey && !this.classList.contains("select-arrow-active") && this.innerHTML != "SBD" && this.innerHTML != "STEEM") {
+            } else if (!getPref && !manageKey && !this.classList.contains("select-arrow-active") && this.innerHTML != "SBD" && this.innerHTML != "SMOKE") {
                 chrome.storage.local.set({
                     last_account: this.innerHTML
                 });
@@ -265,9 +267,9 @@ function initiateCustomSelect() {
             } else if (this.innerHTML == "SBD") {
                 $(".transfer_balance div").eq(0).text('SBD Balance');
                 $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
-            } else if (this.innerHTML == "STEEM") {
-                $(".transfer_balance div").eq(0).text('STEEM Balance');
-                $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+            } else if (this.innerHTML == "SMOKE") {
+                $(".transfer_balance div").eq(0).text('SMOKE Balance');
+                $(".transfer_balance div").eq(1).html(numberWithCommas(SMOKE_p));
             } else if (manageKey) {
                 manageKeys(this.innerHTML);
             } else if (getPref&&$(this).parent().attr("id")!="custom_select_rpc") {
@@ -310,15 +312,15 @@ function initiateCustomSelect() {
 
 //Check WIF validity
 function isActiveWif(pwd, active) {
-    return steem.auth.wifToPublic(pwd) == active;
+    return SMOKE.auth.wifToPublic(pwd) == active;
 }
 
 function isPostingWif(pwd, posting) {
-    return steem.auth.wifToPublic(pwd) == posting;
+    return SMOKE.auth.wifToPublic(pwd) == posting;
 }
 
 function isMemoWif(pwd, memo) {
-    return steem.auth.wifToPublic(pwd) == memo;
+    return SMOKE.auth.wifToPublic(pwd) == memo;
 }
 
 let numberWithCommas = (x) => {

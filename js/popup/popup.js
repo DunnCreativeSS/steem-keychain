@@ -1,7 +1,7 @@
 let accounts_json = null,
     mk = null;
-let active_account, priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
-const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
+let active_account, priceBTC, sbd, SMOKE_p, sp, priceSBD, priceSMOKE, votePowerReserveRate, totalSMOKE, totalVests, rewardBalance, recentClaims, SMOKEPrice, dynamicProp = null;
+const SMOKEIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created = false;
 let manageKey, getPref = false;
 //chrome.storage.local.remove("rpc");
@@ -27,9 +27,9 @@ chrome.storage.local.get(['autolock'], function(items) {
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
         chrome.storage.local.get(['accounts','current_rpc'], function(items) {
-            console.log(items.current_rpc||'https://api.steemit.com');
-            steem.api.setOptions({
-                url: items.current_rpc||'https://api.steemit.com'
+            console.log(items.current_rpc||'https://rpc.smoke.io');
+            SMOKE.api.setOptions({
+                url: items.current_rpc||'https://rpc.smoke.io'
             });
             if (msg.mk == null || msg.mk == undefined) {
                 if (items.accounts == null || items.accounts == undefined){
@@ -172,7 +172,7 @@ function initializeMainMenu() {
     });
 }
 
-// Send STEEM or SBD to an user
+// Send SMOKE or SBD to an user
 $("#send_transfer").click(function() {
     showLoader();
     sendTransfer();
@@ -183,7 +183,7 @@ function voteFor(name) {
     if (active_account.keys.hasOwnProperty("active")) {
         $('#' + name + ' img').attr('src', '../images/loading.gif');
 
-        steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
+        SMOKE.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
             if (err == null) {
                 setTimeout(function() {
                     if ($(".witness_container:visible").length == 0)
@@ -215,22 +215,22 @@ async function sendTransfer() {
     let memo = $("#memo_send").val();
     if(memo!=""&&$("#encrypt_memo").prop("checked")){
       try{
-        const receiver=await  steem.api.getAccountsAsync([to]);
+        const receiver=await  SMOKE.api.getAccountsAsync([to]);
         const memoReceiver=receiver["0"].memo_key;
         memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#"+memo);}
       catch(e){console.log(e);}
     }
     if (to != "" && amount != "" && amount >= 0.001) {
-        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, async function(err, result) {
+        SMOKE.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, async function(err, result) {
             $("#send_loader").hide();
             if (err == null) {
-                const sender=await  steem.api.getAccountsAsync([active_account.name]);
+                const sender=await  SMOKE.api.getAccountsAsync([active_account.name]);
                 sbd=sender["0"].sbd_balance.replace("SBD", "");
-                steem_p=sender["0"].balance.replace("STEEM", "");
+                SMOKE_p=sender["0"].balance.replace("SMOKE", "");
                 if (currency == "SBD") {
                    $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
-                 } else if (currency == "STEEM") {
-                   $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+                 } else if (currency == "SMOKE") {
+                   $(".transfer_balance div").eq(1).html(numberWithCommas(SMOKE_p));
                  }
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();

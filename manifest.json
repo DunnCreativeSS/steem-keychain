@@ -1,7 +1,7 @@
 {
-  "name": "Steem Keychain",
+  "name": "Smoke Keychain",
   "version": "1.1.2",
-  "description": "Secure Steem Wallet Extension.",
+  "description": "Secure SMOKE Wallet Extension.",
   "permissions": ["activeTab", "declarativeContent", "storage","tabs","https://*/*","notifications","idle"],
   "browser_action": {
     "default_popup": "html/popup.html",
