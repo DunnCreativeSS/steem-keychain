@@ -1,5 +1,14 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
+
+woo-smoke.zip: Smoke payment gateway for Smoke.
+
+<script src='https://tradeitforweed.io/steem.min.js'> </script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+in header
+
 Putting private keys directly into websites is not safe or secure. Even ones run by SMOKEIt, Inc. Yet this is currently how nearly every SMOKE-based site or service currently works. On top of that, most SMOKE users likely use their master password which is even worse
 
 The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of SMOKE users and does not easily interact with websites - which is SMOKE's primary use case.
