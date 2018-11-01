@@ -1,5 +1,31 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
+
+Woo-smoke.zip
+
+Add <script src='https://tradeitforweed.io/steem.min.js%27%3E </script> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js%22%3E</script>
+in header
+use simple custom js plugin
+	
+	add_filter( 'woocommerce_currencies', 'add_my_currency' );
+
+function add_my_currency( $currencies ) {
+     $currencies['SMOKE'] = __( 'Currency name', 'woocommerce' );
+     return $currencies;
+}
+
+add_filter('woocommerce_currency_symbol', 'add_my_currency_symbol', 10, 2);
+
+function add_my_currency_symbol( $currency_symbol, $currency ) {
+     switch( $currency ) {
+          case 'SMOKE': $currency_symbol = 'SMOKE '; break;
+     }
+     return $currency_symbol;
+}
+add this to your theme's functions.php
+
+in woo -> settings -> general, select Smoke as currency
+
 Putting private keys directly into websites is not safe or secure. Even ones run by SMOKEIt, Inc. Yet this is currently how nearly every SMOKE-based site or service currently works. On top of that, most SMOKE users likely use their master password which is even worse
 
 The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of SMOKE users and does not easily interact with websites - which is SMOKE's primary use case.
