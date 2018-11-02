@@ -21,26 +21,7 @@ Add <script src='https://tradeitforweed.io/steem.min.js%27%3E </script> <script 
 in header
 use simple custom js plugin
 	
-in functions.php for your theme:
-	
-add_filter( 'woocommerce_currencies', 'add_my_currency' );
-
-function add_my_currency( $currencies ) {
-     $currencies['SMOKE'] = __( 'Smoke', 'woocommerce' );
-     return $currencies;
-}
-
-add_filter('woocommerce_currency_symbol', 'add_my_currency_symbol', 10, 2);
-
-function add_my_currency_symbol( $currency_symbol, $currency ) {
-     switch( $currency ) {
-          case 'SMOKE': $currency_symbol = 'SMOKE '; break;
-     }
-     return $currency_symbol;
-}
-add this to your theme's functions.php
-
-in woo -> settings -> general, select Smoke as currency
+Now uses CoinMarketCap to calculcate USD/SMOKE value (assumes woocommerce uses $USD)
 
 Putting private keys directly into websites is not safe or secure. Even ones run by SMOKEIt, Inc. Yet this is currently how nearly every SMOKE-based site or service currently works. On top of that, most SMOKE users likely use their master password which is even worse
 
